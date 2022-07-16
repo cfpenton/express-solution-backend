@@ -26,7 +26,7 @@ router.get('/consultoresAll', (req, res) => {
     });
 });
 
-// relatorio data
+//data report
 router.get('/relatorio/:co_usuario/:date', (req, res) => {
     
   const { co_usuario, date } = req.params;
@@ -34,7 +34,7 @@ router.get('/relatorio/:co_usuario/:date', (req, res) => {
   console.log('co_usuario', co_usuario);
   console.log('date', date);  
 
-  const query = `CALL SP_GetRelatorio(?, ?);`;
+  const query = `CALL Get_Report(?, ?);`;
   
   mysqlConnection.query(query, [co_usuario, date], (err, rows, fields) => {
     if (err) {
@@ -57,7 +57,7 @@ router.get('/consultores/:co_usuario/:date_start/:date_end', (req, res) => {
   console.log('date_end', date_end);
 
   const query = `
-    CALL SP_GetRelatorioBetween(?, ?, ?);
+    CALL Get_ReportBetween(?, ?, ?);
   `
   mysqlConnection.query(query, [co_usuario, date_start, date_end], (err, rows, fields) => {
     if (err) {
