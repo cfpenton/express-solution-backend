@@ -37,7 +37,16 @@ router.get('/relatorio/:co_usuario/:month_start/:year_start/:month_end/:year_end
   let mm;
   if (year_start < year_end || (year_end == year_start && month_start <= month_end)) {
     for (let y = year_start; y <= year_end; y++) {
-      for (let m = month_start; m <= 12; m++) {
+
+            let abc; 
+      if (y==year_start) {
+        abc = month_start;
+      }
+      if (y!==year_start) {
+        abc = 1;
+      }
+
+      for (let m = abc; m <= 12; m++) {
         mm = m.toString();
         if (mm.length < 2) {
           mm = '0' + mm;
@@ -49,7 +58,7 @@ router.get('/relatorio/:co_usuario/:month_start/:year_start/:month_end/:year_end
           }
           rowArray.push(rows[0][0]);
           if (y == year_end && m == month_end) {
-            console.log(rowArray);
+           /*  console.log(rowArray); */
             res.json(rowArray);
           };
         });
