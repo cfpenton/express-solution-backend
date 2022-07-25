@@ -14,9 +14,9 @@ router.get('/', (req, res) => {
 //get consultores
 router.get('/consultores', (req, res) => {
 
-  mysqlConnection.query(`SELECT  u.co_usuario, u.no_usuario FROM  CAO_USUARIO u 
-                            INNER JOIN PERMISSAO_SISTEMA p ON u.co_usuario = p.co_usuario 
-                            WHERE p.co_sistema = 1 AND p.in_ativo = "S" AND P.co_tipo_usuario IN (0,1,2)`, (err, rows, fields) => {
+  mysqlConnection.query(`SELECT u.co_usuario, u.no_usuario FROM cao_usuario u 
+                            INNER JOIN permissao_sistema p ON u.co_usuario = p.co_usuario 
+                            WHERE p.co_sistema = 1 AND p.in_ativo = "S" AND p.co_tipo_usuario IN (0,1,2)`, (err, rows, fields) => {
     if (err) {
       console.log(err);
     }
@@ -32,7 +32,7 @@ router.get('/consultores', (req, res) => {
 router.get('/relatorio/:co_usuario/:month_start/:year_start/:month_end/:year_end', (req, res) => {
 
   const { co_usuario, month_start, year_start, month_end, year_end } = req.params;
-  const query = `CALL Get_MonthReport(?, ?, ?);`;
+  const repo = `CALL Get_MonthReport(?, ?, ?);`;
   let rowArray = [];
   let mm;
   if (year_start < year_end || (year_end == year_start && month_start <= month_end)) {
@@ -52,7 +52,7 @@ router.get('/relatorio/:co_usuario/:month_start/:year_start/:month_end/:year_end
           mm = '0' + mm;
         }
       /*   console.log(co_usuario, mm, y); */
-        mysqlConnection.query(query, [co_usuario, mm, y], (err, rows, fields) => {
+        mysqlConnection.query(repo, [co_usuario, mm, y], (err, rows, fields) => {
           if (err) {
             console.log(err);
           }
