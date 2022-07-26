@@ -21,15 +21,15 @@ DELIMITER $$
 -- Procedures
 --
 CREATE PROCEDURE `Get_MonthReport` (IN `_co_usuario` VARCHAR(45), IN `_m` VARCHAR(2), IN `_y` VARCHAR(4))  BEGIN 
-	SELECT  _m as MONTH, 
+	SELECT  CONCAT(_m,'/',_y) as MONTH, 
                 sum((f.valor - (f.valor * f.total_imp_inc) / 100)) as RECEITA_LIQUIDA, s.brut_salario as CUSTO_FIJO,   
 		sum((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100) as COMISSAO,
-		sum((f.valor - (f.valor * f.total_imp_inc) / 100) - (s.brut_salario + (f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) / 100)) as LUCRO
+		sum((f.valor - (f.valor * f.total_imp_inc) / 100)) - (s.brut_salario + sum((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100)) as LUCRO
 	FROM cao_fatura f
 	INNER JOIN cao_os o 
 		ON f.co_os = o.co_os
 	INNER JOIN cao_salario s 
-		ON s.co_usuario = s.co_usuario
+		ON o.co_usuario = s.co_usuario
 	INNER JOIN cao_usuario u
 		ON s.co_usuario = u.co_usuario
 	INNER JOIN permissao_sistema ps
