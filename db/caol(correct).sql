@@ -1,38 +1,49 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
--- Host: sql3.freesqldatabase.com
--- Generation Time: Jul 25, 2022 at 01:20 AM
--- Server version: 5.5.54-0ubuntu0.12.04.1
--- PHP Version: 7.0.33-0ubuntu0.16.04.16
+-- Host: 127.0.0.1
+-- Generation Time: Jul 28, 2022 at 06:53 PM
+-- Server version: 10.4.24-MariaDB
+-- PHP Version: 8.1.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
 --
--- Database: `sql3507753`
+-- Database: `caol2`
 --
 
 DELIMITER $$
 --
 -- Procedures
 --
-CREATE PROCEDURE `Get_MonthReport` (IN `_co_usuario` VARCHAR(45), IN `_m` VARCHAR(2), IN `_y` VARCHAR(4))  BEGIN 
-	SELECT  CONCAT(_m,'/',_y) as MONTH, 
-                sum((f.valor - (f.valor * f.total_imp_inc) / 100)) as RECEITA_LIQUIDA, s.brut_salario as CUSTO_FIJO,   
-		sum((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100) as COMISSAO,
-		sum((f.valor - (f.valor * f.total_imp_inc) / 100)) - (s.brut_salario + sum((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100)) as LUCRO
-	FROM cao_fatura f
-	INNER JOIN cao_os o 
+CREATE PROCEDURE `Get_Consultor` (IN `_co_usuario` VARCHAR(45))   BEGIN 
+	SELECT u.no_usuario FROM cao_usuario u 
+                            INNER JOIN permissao_sistema p ON u.co_usuario = p.co_usuario 
+                            WHERE p.co_sistema = 1 AND p.in_ativo = "S" AND p.co_tipo_usuario IN (0,1,2) AND u.co_usuario = _co_usuario;
+
+END$$
+
+CREATE PROCEDURE `Get_MonthReport` (IN `_co_usuario` VARCHAR(45), IN `_m` VARCHAR(2), IN `_y` VARCHAR(4))   BEGIN 
+	SELECT SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) as RECEITA_LIQUIDA, s.brut_salario as CUSTO_FIJO,   
+		SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100) as COMISSAO,
+		SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) - (s.brut_salario + SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100)) as LUCRO
+	FROM CAO_FATURA f
+	INNER JOIN CAO_OS o 
 		ON f.co_os = o.co_os
-	INNER JOIN cao_salario s 
+	INNER JOIN CAO_SALARIO s 
 		ON o.co_usuario = s.co_usuario
-	INNER JOIN cao_usuario u
+	INNER JOIN CAO_USUARIO u
 		ON s.co_usuario = u.co_usuario
-	INNER JOIN permissao_sistema ps
+	INNER JOIN PERMISSAO_SISTEMA ps
 		ON u.co_usuario = ps.co_usuario
 	WHERE ps.co_sistema = 1 
 		AND ps.in_ativo = 'S' 
@@ -52,16 +63,16 @@ DELIMITER ;
 
 CREATE TABLE `cao_fatura` (
   `co_fatura` int(8) UNSIGNED NOT NULL,
-  `co_cliente` int(8) NOT NULL DEFAULT '0',
-  `co_sistema` int(8) NOT NULL DEFAULT '0',
-  `co_os` int(8) NOT NULL DEFAULT '0',
-  `num_nf` int(10) NOT NULL DEFAULT '0',
-  `total` float NOT NULL DEFAULT '0',
-  `valor` float NOT NULL DEFAULT '0',
+  `co_cliente` int(8) NOT NULL DEFAULT 0,
+  `co_sistema` int(8) NOT NULL DEFAULT 0,
+  `co_os` int(8) NOT NULL DEFAULT 0,
+  `num_nf` int(10) NOT NULL DEFAULT 0,
+  `total` float NOT NULL DEFAULT 0,
+  `valor` float NOT NULL DEFAULT 0,
   `data_emissao` date NOT NULL DEFAULT '0000-00-00',
   `corpo_nf` text NOT NULL,
-  `comissao_cn` float NOT NULL DEFAULT '0',
-  `total_imp_inc` float NOT NULL DEFAULT '0'
+  `comissao_cn` float NOT NULL DEFAULT 0,
+  `total_imp_inc` float NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -232,15 +243,15 @@ INSERT INTO `cao_fatura` (`co_fatura`, `co_cliente`, `co_sistema`, `co_os`, `num
 CREATE TABLE `cao_os` (
   `co_os` int(8) NOT NULL,
   `nu_os` int(8) DEFAULT NULL,
-  `co_sistema` int(8) DEFAULT '0',
+  `co_sistema` int(8) DEFAULT 0,
   `co_usuario` varchar(50) DEFAULT '0',
-  `co_arquitetura` int(2) DEFAULT '0',
+  `co_arquitetura` int(2) DEFAULT 0,
   `ds_os` varchar(200) DEFAULT '0',
   `ds_caracteristica` varchar(200) DEFAULT '0',
   `ds_requisito` varchar(200) DEFAULT NULL,
   `dt_inicio` date DEFAULT NULL,
   `dt_fim` date DEFAULT NULL,
-  `co_status` int(2) DEFAULT '0',
+  `co_status` int(2) DEFAULT 0,
   `diretoria_sol` varchar(50) DEFAULT '0',
   `dt_sol` date DEFAULT NULL,
   `nu_tel_sol` varchar(20) DEFAULT '0',
@@ -1532,8 +1543,8 @@ INSERT INTO `cao_os` (`co_os`, `nu_os`, `co_sistema`, `co_usuario`, `co_arquitet
 CREATE TABLE `cao_salario` (
   `co_usuario` varchar(20) NOT NULL DEFAULT '',
   `dt_alteracao` date NOT NULL DEFAULT '0000-00-00',
-  `brut_salario` float NOT NULL DEFAULT '0',
-  `liq_salario` float NOT NULL DEFAULT '0'
+  `brut_salario` float NOT NULL DEFAULT 0,
+  `liq_salario` float NOT NULL DEFAULT 0
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -1743,8 +1754,8 @@ INSERT INTO `cao_usuario` (`co_usuario`, `no_usuario`, `ds_senha`, `co_usuario_a
 
 CREATE TABLE `permissao_sistema` (
   `co_usuario` varchar(20) NOT NULL DEFAULT '',
-  `co_tipo_usuario` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
-  `co_sistema` bigint(20) UNSIGNED NOT NULL DEFAULT '0',
+  `co_tipo_usuario` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
+  `co_sistema` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `in_ativo` char(1) NOT NULL DEFAULT 'S',
   `co_usuario_atualizacao` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
   `dt_atualizacao` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
@@ -1953,8 +1964,14 @@ ALTER TABLE `permissao_sistema`
 --
 ALTER TABLE `cao_fatura`
   MODIFY `co_fatura` int(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=164;
+
 --
 -- AUTO_INCREMENT for table `cao_os`
 --
 ALTER TABLE `cao_os`
-  MODIFY `co_os` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1283;COMMIT;
+  MODIFY `co_os` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1283;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
