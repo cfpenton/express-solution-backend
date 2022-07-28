@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 //Environment variable
 /* servidor-win-remoto */
 const mysqlConnection = mysql.createConnection({
-    host: 'bjy65fmikhjvqmzmt2sh-mysql.services.clever-cloud.com:3306',
+    host: 'bjy65fmikhjvqmzmt2sh-mysql.services.clever-cloud.com',
     user: 'ule1scwlbxqev7hn',
     password: 'wAc8ly65QV5YP8A4EhBZ',
     database: 'bjy65fmikhjvqmzmt2sh'
