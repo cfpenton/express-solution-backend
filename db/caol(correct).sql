@@ -36,14 +36,14 @@ CREATE PROCEDURE `Get_MonthReport` (IN `_co_usuario` VARCHAR(45), IN `_m` VARCHA
 	SELECT SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) as RECEITA_LIQUIDA, s.brut_salario as CUSTO_FIJO,   
 		SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100) as COMISSAO,
 		SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) - (s.brut_salario + SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100)) as LUCRO
-	FROM CAO_FATURA f
-	INNER JOIN CAO_OS o 
+	FROM cao_fatura f
+	INNER JOIN cao_os o 
 		ON f.co_os = o.co_os
-	INNER JOIN CAO_SALARIO s 
+	INNER JOIN cao_salario s 
 		ON o.co_usuario = s.co_usuario
-	INNER JOIN CAO_USUARIO u
+	INNER JOIN cao_usuario u
 		ON s.co_usuario = u.co_usuario
-	INNER JOIN PERMISSAO_SISTEMA ps
+	INNER JOIN permissao_sistema ps
 		ON u.co_usuario = ps.co_usuario
 	WHERE ps.co_sistema = 1 
 		AND ps.in_ativo = 'S' 
