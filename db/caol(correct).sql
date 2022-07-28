@@ -11,12 +11,6 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
 --
 -- Database: `caol2`
 --
@@ -34,7 +28,7 @@ END$$
 
 CREATE PROCEDURE `Get_MonthReport` (IN `_co_usuario` VARCHAR(45), IN `_m` VARCHAR(2), IN `_y` VARCHAR(4))   BEGIN 
 	SELECT SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) as RECEITA_LIQUIDA, s.brut_salario as CUSTO_FIJO,   
-		SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100) as COMISSAO,
+		SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * f.comissao_cn / 100) as COMISSAO,
 		SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) - (s.brut_salario + SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100)) as LUCRO
 	FROM cao_fatura f
 	INNER JOIN cao_os o 
@@ -49,7 +43,7 @@ CREATE PROCEDURE `Get_MonthReport` (IN `_co_usuario` VARCHAR(45), IN `_m` VARCHA
 		AND ps.in_ativo = 'S' 
 		AND ps.co_tipo_usuario IN (0,1,2) 
 		AND u.co_usuario = _co_usuario
-		AND  MONTH(data_emissao) = _m AND YEAR(data_emissao) = _y;
+		AND  MONTH(f.data_emissao) = _m AND YEAR(f.data_emissao) = _y;
 
 END$$
 
@@ -1971,7 +1965,3 @@ ALTER TABLE `cao_fatura`
 ALTER TABLE `cao_os`
   MODIFY `co_os` int(8) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1283;
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
