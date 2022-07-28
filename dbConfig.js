@@ -2,12 +2,12 @@ const mysql = require('mysql2');
 
 //Environment variable
 /* servidor-win-remoto */
-const mysqlConnection = mysql.createConnection({
+/* const mysqlConnection = mysql.createConnection({
     host: 'bjy65fmikhjvqmzmt2sh-mysql.services.clever-cloud.com',
     user: 'ule1scwlbxqev7hn',
     password: 'wAc8ly65QV5YP8A4EhBZ',
     database: 'bjy65fmikhjvqmzmt2sh'
-});
+}); */
 /* servidor-win-remoto */
 /* const mysqlConnection = mysql.createConnection({
     host: 'buhigz693lipvlr9tnns-mysql.services.clever-cloud.com',
@@ -17,12 +17,12 @@ const mysqlConnection = mysql.createConnection({
 });  */
 
 /* servidor-linux-remoto */
-/* const mysqlConnection = mysql.createConnection({
+const mysqlConnection = mysql.createConnection({
     host: 'sql3.freesqldatabase.com',
     user: 'sql3507753',
     password: 'CAzTGwhT5Q',
     database: 'sql3507753'
-}); */
+});
 
 /* servidor-local */
 /* const mysqlConnection = mysql.createConnection({
