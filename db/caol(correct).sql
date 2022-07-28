@@ -29,7 +29,7 @@ END$$
 CREATE PROCEDURE `Get_MonthReport` (IN `_co_usuario` VARCHAR(45), IN `_m` VARCHAR(2), IN `_y` VARCHAR(4))   BEGIN 
 	SELECT SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) as RECEITA_LIQUIDA, s.brut_salario as CUSTO_FIJO,   
 		SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * f.comissao_cn / 100) as COMISSAO,
-		SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) - (s.brut_salario + SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (comissao_cn) /100)) as LUCRO
+		SUM((f.valor - (f.valor * f.total_imp_inc) / 100)) - (s.brut_salario + SUM((f.valor - (f.valor * f.total_imp_inc) / 100) * (f.comissao_cn) /100)) as LUCRO
 	FROM cao_fatura f
 	INNER JOIN cao_os o 
 		ON f.co_os = o.co_os
