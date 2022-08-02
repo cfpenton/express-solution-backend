@@ -25,6 +25,27 @@ router.get('/consultores', (req, res) => {
   });
 });
 
+//get salarios
+router.get('/salarios', (req, res) => {
+
+  mysqlConnection.query(`SELECT s.brut_salario, u.no_usuario FROM cao_usuario u 
+  INNER JOIN cao_salario s ON u.co_usuario = s.co_usuario
+  INNER JOIN permissao_sistema p ON u.co_usuario = p.co_usuario 
+  WHERE p.co_sistema = 1 AND p.in_ativo = "S" AND p.co_tipo_usuario IN (0,1,2)`, (err, rows, fields) => {
+
+    if (err) {
+      console.log("Error getting salario", err);
+    }
+/*     if (rows2[0][0] !== undefined) {
+      bruto_salario = rows2[0][0].brut_salario;
+    }
+    else{
+      bruto_salario = null;
+    } */
+    res.json(rows);
+  });
+});
+
 //data report (month range)
 //month(01-12)
 //year(2003-2007)
@@ -33,8 +54,9 @@ router.get('/relatorio/:co_usuario/:month_start/:year_start/:month_end/:year_end
 
   const { co_usuario, month_start, year_start, month_end, year_end } = req.params;
   /* console.log(co_usuario); */
-  const repo = `CALL Get_MonthReport(?, ?, ?);`;
-  const getcons = `CALL Get_Consultor(?);`;
+  const getReport = `CALL Get_MonthReport(?, ?, ?);`;
+  const getConsultor = `CALL Get_Consultor(?);`;
+  
   let dateArray = [];
   let no_consultor = '';
   let rlArray = [];
@@ -59,7 +81,7 @@ router.get('/relatorio/:co_usuario/:month_start/:year_start/:month_end/:year_end
         }
         dateArray.push(mm + '/' + y);
         
-        mysqlConnection.query(repo, [co_usuario, mm, y], (err, rows, fields) => {
+        mysqlConnection.query(getReport, [co_usuario, mm, y], (err, rows, fields) => {
           if (err) {
             console.log("Error getting rowArray", err);
           }
@@ -70,12 +92,14 @@ router.get('/relatorio/:co_usuario/:month_start/:year_start/:month_end/:year_end
           rlArray.push(rows[0][0].RECEITA_LIQUIDA);
           rowArray.push(rows[0][0]);
           if (y == year_end && m == month_end) {
-            mysqlConnection.query(getcons, [co_usuario], (err1, rows1, fields) => {
+            mysqlConnection.query(getConsultor, [co_usuario], (err1, rows1, fields) => {
               if (err1) {
                 console.log("Error getting no_consultor", err1);
               }
               no_consultor = rows1[0][0].no_usuario;
-              res.json({ no_consultor, dateArray, rowArray, rlArray, saldo });
+
+              
+              res.json({ no_consultor, dateArray, rowArray, rlArray, saldo });           
             });
 
           };
